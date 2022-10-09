@@ -593,6 +593,13 @@ class IntelCPPCompiler(IntelGnuLikeCompiler, CPPCompiler):
         return []
 
 
+class IntelLLVMCPPCompiler(ClangCPPCompiler):
+
+
+    id = 'intel-llvm'
+
+
+
 class VisualStudioLikeCPPCompilerMixin(CompilerMixinBase):
 
     """Mixin for C++ specific method overrides in MSVC-like compilers."""

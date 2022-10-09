@@ -62,6 +62,7 @@ from .c import (
     EmscriptenCCompiler,
     IntelCCompiler,
     IntelClCCompiler,
+    IntelLLVMCCompiler,
     NvidiaHPC_CCompiler,
     PGICCompiler,
     CcrxCCompiler,
@@ -83,6 +84,7 @@ from .cpp import (
     EmscriptenCPPCompiler,
     IntelCPPCompiler,
     IntelClCPPCompiler,
+    IntelLLVMCPPCompiler,
     NvidiaHPC_CPPCompiler,
     PGICPPCompiler,
     CcrxCPPCompiler,
@@ -106,6 +108,7 @@ from .fortran import (
     FlangFortranCompiler,
     IntelFortranCompiler,
     IntelClFortranCompiler,
+    IntelLLVMFortranCompiler,
     NAGFortranCompiler,
     Open64FortranCompiler,
     PathScaleFortranCompiler,
@@ -617,6 +620,12 @@ def _detect_c_or_cpp_compiler(env: 'Environment', lang: str, for_machine: Machin
             return cls(
                 ccache + compiler, version, for_machine, is_cross, info,
                 exe_wrap, full_version=full_version, linker=l)
+        if 'Intel(R) oneAPI' in out:
+            cls = IntelLLVMCCompiler if lang == 'c' else IntelLLVMCPPCompiler
+            l = guess_nix_linker(env, compiler, cls, version, for_machine)
+            return cls(
+                ccache + compiler, version, for_machine, is_cross, info,
+                exe_wrap, full_version=full_version, linker=l)
         if 'TMS320C2000 C/C++' in out or 'MSP430 C/C++' in out or 'TI ARM C/C++ Compiler' in out:
             lnk: T.Union[T.Type[C2000DynamicLinker], T.Type[TIDynamicLinker]]
             if 'TMS320C2000 C/C++' in out:
@@ -786,6 +795,13 @@ def detect_fortran_compiler(env: 'Environment', for_machine: MachineChoice) -> C
             if 'ifort (IFORT)' in out:
                 linker = guess_nix_linker(env, compiler, IntelFortranCompiler, version, for_machine)
                 return IntelFortranCompiler(
+                    compiler, version, for_machine, is_cross, info,
+                    exe_wrap, full_version=full_version, linker=linker)
+
+            if 'ifx (IFORT)' in out:
+                cls = IntelLLVMFortranCompiler
+                linker = guess_nix_linker(env, compiler, cls, version, for_machine)
+                return cls(
                     compiler, version, for_machine, is_cross, info,
                     exe_wrap, full_version=full_version, linker=linker)
 

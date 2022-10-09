@@ -352,6 +352,12 @@ class IntelFortranCompiler(IntelGnuLikeCompiler, FortranCompiler):
         return ['-gen-dep=' + outtarget, '-gen-depformat=make']
 
 
+class IntelLLVMFortranCompiler(IntelFortranCompiler):
+
+
+    id = 'intel-llvm'
+
+
 class IntelClFortranCompiler(IntelVisualStudioLikeCompiler, FortranCompiler):
 
     file_suffixes = ('f90', 'f', 'for', 'ftn', 'fpp', )
